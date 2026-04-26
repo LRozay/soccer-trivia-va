@@ -97,11 +97,17 @@ def generate(
     Returns the assistant's reply as a plain string.
     """
     # Use the tokenizer's built-in chat template (works for Phi, Llama, Mistral, etc.)
-    input_ids = tokenizer.apply_chat_template(
-        messages,
-        add_generation_prompt=True,
-        return_tensors="pt",
-    ).to(model.device)
+
+
+  input_ids = tokenizer.apply_chat_template(
+    messages,
+    add_generation_prompt=True,
+    return_tensors="pt",
+    tokenize=True,
+  )
+  if hasattr(input_ids, "input_ids"):
+    input_ids = input_ids.input_ids
+  input_ids = input_ids.to(model.device)
 
     with torch.no_grad():
         output_ids = model.generate(
